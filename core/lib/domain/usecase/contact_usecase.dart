@@ -13,7 +13,7 @@ class ContactUseCase {
 
   ContactUseCase(this.repository);
 
-  Future<Result<List<Contact>, LocalStorageDataSource>> getContactList() async {
+  Future<Result<List<Contact>, LocalStorageErrorType>> getContactList() async {
     // Check if local data is present
     var storedContacts = await repository.getContactList();
 
@@ -31,7 +31,7 @@ class ContactUseCase {
     }
   }
 
-  Future<Result<Unit, AddContactErrorType>> addContact({
+  Future<Result<bool, AddContactErrorType>> addContact({
     String? firstname,
     String? lastname,
     String? nickname,
@@ -61,8 +61,7 @@ class ContactUseCase {
       );
 
       await repository.addContact(newContact);
-
-      return Success(Unit());
+      return Success(true);
     }
     else {
       return AddContactErrorType.emptyFields.toFailure();
@@ -78,7 +77,19 @@ class ContactUseCase {
   }
 
   Future<Result<List<Contact>?, LocalStorageErrorType>> searchContactsByFullName(String fullName) async {
-    return repository.searchContactsByFullName(fullName);
+    final searchedContacts = await repository.searchContactsByFullName(fullName);
+    switch(searchedContacts) {
+      case Success():
+        final localData = searchedContacts.data;
+        if (localData != null && localData.isNotEmpty) {
+          return Success(localData);
+        }
+        else {
+          return LocalStorageErrorType.noData.toFailure();
+        }
+      case Failure():
+        return LocalStorageErrorType.isarError.toFailure();
+    }
   }
 
   bool validateFirstname(String? firstname) {
