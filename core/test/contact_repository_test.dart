@@ -1,8 +1,6 @@
 import 'package:core/common/result.dart';
 import 'package:core/data/data_source/local_storage_data_source.dart';
 import 'package:core/data/model/contact.dart';
-import 'package:core/data/model/group.dart';
-import 'package:core/data/model/relationship.dart';
 import 'package:core/data/repository/contact_repository.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
@@ -37,9 +35,9 @@ void main() async {
     phone: '987-654-3210',
     email: 'email@gmail.com',
     nickname: 'TFL',
-    groups: [Group(name: 'Family')],
+    groups: [Group.Family],
     notes: 'The Youngest of the fam!',
-    relationship: Relationship(name: 'Brother'),
+    relationship: Relationship.Brother,
   );
 
   List<Contact> contactList = <Contact>[
@@ -87,12 +85,12 @@ void main() async {
 
   test('addContact should not throw an exception', () async {
 
-    when(() => mockLocalStorageDataSource.addContact(mockContact1))
-        .thenAnswer((_) async => Future.value());
+    when(() => mockLocalStorageDataSource.addContact(firstname: mockContact1.firstname))
+        .thenAnswer((_) async {});
 
-    expect(() async => await repository.addContact(mockContact1), returnsNormally);
+    expect(() async => await repository.addContact(firstname: mockContact1.firstname), returnsNormally);
 
-    verify(() => mockLocalStorageDataSource.addContact(mockContact1));
+    verify(() => mockLocalStorageDataSource.addContact(firstname: mockContact1.firstname));
     verifyNoMoreInteractions(mockLocalStorageDataSource);
   });
 
@@ -119,53 +117,4 @@ void main() async {
     verify(() => mockLocalStorageDataSource.deleteContact(id));
     verifyNoMoreInteractions(mockLocalStorageDataSource);
   });
-
-  group('searchContactsByFullName Tests', () {
-    final firstname = 'John';
-    final lastname = 'Doe';
-
-    final fullName = '$firstname $lastname';
-    final searchedContacts = [mockContact1];
-
-    test('returns a Result with List<Contact>', () async {
-
-      when(() => mockLocalStorageDataSource.searchContactsByFullName(fullName))
-          .thenAnswer((_) async => Success(searchedContacts));
-
-      final result = await repository.searchContactsByFullName(fullName);
-
-      expect(result, isA<Success>());
-      expect((result as Success).data, searchedContacts);
-
-      verify(() => mockLocalStorageDataSource.searchContactsByFullName(fullName));
-      verifyNoMoreInteractions(mockLocalStorageDataSource);
-    });
-
-    test('returns an error when list is empty', () async {
-      when(() => mockLocalStorageDataSource.searchContactsByFullName(fullName))
-          .thenAnswer((_) async => LocalStorageErrorType.noData.toFailure());
-
-      final result = await repository.searchContactsByFullName(fullName);
-
-      expect(result, isA<Failure>());
-      expect((result as Failure).type, LocalStorageErrorType.noData);
-
-      verify(() => mockLocalStorageDataSource.searchContactsByFullName(fullName));
-      verifyNoMoreInteractions(mockLocalStorageDataSource);
-    });
-
-    test('returns an error when something is wrong with isar', () async {
-      when(() => mockLocalStorageDataSource.searchContactsByFullName(fullName))
-          .thenAnswer((_) async => LocalStorageErrorType.isarError.toFailure());
-
-      final result = await repository.searchContactsByFullName(fullName);
-
-      expect(result, isA<Failure>());
-      expect((result as Failure).type, LocalStorageErrorType.isarError);
-
-      verify(() => mockLocalStorageDataSource.searchContactsByFullName(fullName));
-      verifyNoMoreInteractions(mockLocalStorageDataSource);
-    });
-  });
-
 }

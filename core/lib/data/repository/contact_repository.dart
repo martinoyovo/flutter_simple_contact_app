@@ -11,11 +11,42 @@ class ContactRepository {
     return dataSource.getContactList();
   }
 
-  Future<void> addContact(Contact data) async {
-    return dataSource.addContact(data);
+  Future<Result<Contact?, LocalStorageErrorType>> getContactById(int id) {
+    return dataSource.getContactById(id);
   }
 
-  Future<void> updateContact(int id) async {
+  Future<void> addContact({
+    String? firstname,
+    String? lastname,
+    String? nickname,
+    String? phone,
+    String? email,
+    String? notes,
+    List<Group>? groups,
+    Relationship? relationship
+  }) async {
+    return dataSource.addContact(
+      firstname: firstname,
+      lastname: lastname,
+      nickname: nickname,
+      phone: phone,
+      email: email,
+      notes: phone,
+      groups: groups,
+      relationship: relationship
+    );
+  }
+
+  Future<void> updateContact(int id, {
+    String? firstname,
+    String? lastname,
+    String? nickname,
+    String? phone,
+    String? email,
+    String? notes,
+    List<Group>? groups,
+    Relationship? relationship
+  }) async {
     return dataSource.updateContact(id);
   }
 
@@ -23,7 +54,7 @@ class ContactRepository {
     return dataSource.deleteContact(id);
   }
 
-  Future<Result<List<Contact>?, LocalStorageErrorType>> searchContactsByFullName(String fullName) async {
-    return dataSource.searchContactsByFullName(fullName);
-  }
+  /*Future<Result<List<Contact>?, LocalStorageErrorType>> filteredContactList(String? query) async {
+    return dataSource.filteredContactList(query);
+  }*/
 }

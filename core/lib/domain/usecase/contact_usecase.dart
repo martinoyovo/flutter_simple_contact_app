@@ -3,8 +3,6 @@ import 'package:core/common/result.dart';
 import 'package:core/common/utils/email_validator.dart';
 import 'package:core/data/data_source/local_storage_data_source.dart';
 import 'package:core/data/model/contact.dart';
-import 'package:core/data/model/group.dart';
-import 'package:core/data/model/relationship.dart';
 import 'package:core/data/repository/contact_repository.dart';
 
 
@@ -49,7 +47,7 @@ class ContactUseCase {
         validateNotes(notes) ||
         validateRelationship(relationship)
     ) {
-      Contact newContact = Contact(
+      await repository.addContact(
         firstname: firstname,
         lastname: lastname,
         nickname: nickname,
@@ -59,8 +57,6 @@ class ContactUseCase {
         groups: groups,
         relationship: relationship
       );
-
-      await repository.addContact(newContact);
       return Success(true);
     }
     else {
@@ -68,27 +64,68 @@ class ContactUseCase {
     }
   }
 
-  Future<void> updateContact(int id) async {
-    await repository.updateContact(id);
+  Future<Result<bool, UpdateContactErrorType>> updateContact(int id, {
+    String? firstname,
+    String? lastname,
+    String? nickname,
+    String? phone,
+    String? email,
+    String? notes,
+    List<Group>? groups,
+    Relationship? relationship
+  }) async {
+    final getContactResult = await repository.getContactById(id);
+    switch(getContactResult) {
+      case Success():
+        final existingContact = getContactResult.data;
+        if (existingContact != null) {
+          await repository.updateContact(id,
+            firstname: firstname,
+            lastname: lastname,
+            nickname: nickname,
+            phone: phone,
+            email: email,
+            notes: phone,
+            groups: groups,
+            relationship: relationship
+          );
+
+          return Success(true);
+        }
+        else {
+          return UpdateContactErrorType.noContact.toFailure();
+        }
+      case Failure():
+        return UpdateContactErrorType.general.toFailure();
+    }
   }
 
   Future<void> deleteContact(int id) async {
-    await repository.updateContact(id);
+    await repository.deleteContact(id);
   }
 
-  Future<Result<List<Contact>?, LocalStorageErrorType>> searchContactsByFullName(String fullName) async {
-    final searchedContacts = await repository.searchContactsByFullName(fullName);
-    switch(searchedContacts) {
+  Future<Result<List<Contact>?, SearchContactErrorType>> filteredContactList(String? query) async {
+    final contactsResult = await repository.getContactList();
+    switch (contactsResult) {
       case Success():
-        final localData = searchedContacts.data;
+        final localData = contactsResult.data;
         if (localData != null && localData.isNotEmpty) {
+          if (query != null && query.isNotEmpty) {
+            final results = _filterContacts(localData, query);
+
+            if (results.isEmpty) {
+              return SearchContactErrorType.emptySearchList.toFailure();
+            }
+
+            return Success(results);
+          }
+
           return Success(localData);
-        }
-        else {
-          return LocalStorageErrorType.noData.toFailure();
+        } else {
+          return SearchContactErrorType.emptyList.toFailure();
         }
       case Failure():
-        return LocalStorageErrorType.isarError.toFailure();
+        return SearchContactErrorType.isarError.toFailure();
     }
   }
 
@@ -133,4 +170,21 @@ class ContactUseCase {
 
 enum AddContactErrorType with ErrorTypeEnumMixin {
   emptyFields
+}
+
+enum UpdateContactErrorType with ErrorTypeEnumMixin {
+  noContact,
+  general
+}
+
+enum SearchContactErrorType with ErrorTypeEnumMixin {
+  isarError,
+  emptyList,
+  emptySearchList,
+}
+
+List<Contact> _filterContacts(List<Contact> contacts, String query) {
+  final lowerCaseQuery = query.toLowerCase();
+  return contacts.where((c) =>
+      '${c.firstname} ${c.lastname}'.toLowerCase().contains(lowerCaseQuery)).toList();
 }

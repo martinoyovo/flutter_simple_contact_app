@@ -1,22 +1,25 @@
-import 'package:core/data/model/group.dart';
-import 'package:core/data/model/relationship.dart';
-import 'package:isar/isar.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:hive/hive.dart';
 
 part 'contact.g.dart';
 
-@JsonSerializable()
-@collection
+@HiveType(typeId: 0)
 class Contact {
-  Id id = Isar.autoIncrement;
-  final String? firstname;
-  final String? lastname;
-  final String? nickname;
-  final String? phone;
-  final String? email;
-  final String? notes;
-  final List<Group>? groups;
-  final Relationship? relationship;
+  @HiveField(0)
+  String? firstname;
+  @HiveField(1)
+  String? lastname;
+  @HiveField(2)
+  String? nickname;
+  @HiveField(3)
+  String? phone;
+  @HiveField(4)
+  String? email;
+  @HiveField(5)
+  String? notes;
+  @HiveField(6)
+  List<Group>? groups;
+  @HiveField(7)
+  Relationship? relationship;
 
   Contact({
     this.firstname,
@@ -28,8 +31,36 @@ class Contact {
     this.groups,
     this.relationship
   });
+}
 
-  factory Contact.fromJson(Map<String, dynamic> json) => _$ContactFromJson(json);
+@HiveType(typeId: 1)
+enum Group {
+  @HiveField(0)
+  Family,
+  @HiveField(1)
+  Friends,
+  @HiveField(2)
+  Colleagues,
+}
 
-  Map<String, dynamic> toJson() => _$ContactToJson(this);
+@HiveType(typeId: 2)
+enum Relationship {
+  @HiveField(0)
+  Friend,
+  @HiveField(1)
+  Brother,
+  @HiveField(2)
+  Sister,
+  @HiveField(3)
+  Parent,
+  @HiveField(4)
+  Father,
+  @HiveField(5)
+  Mother,
+  @HiveField(6)
+  Relative,
+  @HiveField(7)
+  Spouse,
+  @HiveField(8)
+  Other,
 }
