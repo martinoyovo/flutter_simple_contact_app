@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:simple_contact_app/constants/app_colors.dart';
 import 'package:simple_contact_app/constants/app_dimens.dart';
 import 'package:simple_contact_app/view_models/contact_view_model.dart';
-import 'package:simple_contact_app/widgets/add_contact_form.dart';
+import 'package:simple_contact_app/widgets/forms/add_contact_form.dart';
 import 'package:simple_contact_app/widgets/contact_card.dart';
 import 'package:simple_contact_app/widgets/default_text_field.dart';
 import 'package:simple_contact_app/widgets/dialog_helper.dart';

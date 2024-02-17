@@ -8,7 +8,7 @@ import 'package:simple_contact_app/constants/app_styles.dart';
 import 'package:simple_contact_app/utils/extensions.dart';
 import 'package:simple_contact_app/view_models/contact_view_model.dart';
 import 'package:simple_contact_app/widgets/dialog_helper.dart';
-import 'package:simple_contact_app/widgets/update_contact_form.dart';
+import 'package:simple_contact_app/widgets/forms/update_contact_form.dart';
 import 'package:stacked/stacked.dart';
 
 class ContactDetails extends StatelessWidget {
@@ -26,137 +26,129 @@ class ContactDetails extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold),
               )
           ),
-          body: Stack(
+          bottomSheet: SizedBox(
+            height: 100,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _bottomButton(
+                    icon: CupertinoIcons.delete,
+                    iconColor: AppColors.redColor,
+                    text: "Delete",
+                    onTap: () {
+                      viewModel.deleteContact();
+                      context.pop();
+                    }
+                ),
+                const Gap(AppDimens.margin5),
+
+                _bottomButton(
+                    icon: CupertinoIcons.pencil_outline,
+                    text: "Edit contact",
+                    onTap: () {
+                      DialogHelper().showBottomSheet(
+                          context: context,
+                          child: UpdateContactForm(viewModel)
+                      );
+                    }
+                ),
+              ],
+            ),
+          ),
+          body: ListView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: AppDimens.margin2_5),
             children: [
-              ListView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: AppDimens.margin2_5),
+              const Gap(AppDimens.margin4),
+              Row(
                 children: [
-                  const Gap(AppDimens.margin4),
-                  Row(
-                    children: [
-                      Container(
-                        height: AppDimens.bigAvatarSize,
-                        width: AppDimens.bigAvatarSize,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.neutral200
-                        ),
-                        child: Center(
-                            child: Text(
-                                contact.firstname == null ? "" : contact.firstname![0],
-                                style: AppStyles.avatarTextStyle
-                            )
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Gap(AppDimens.margin2),
-                  SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text("${contact.firstname ?? ''} ${contact.lastname ?? ''}",
-                          style: AppStyles.avatarTextStyle)
-                  ),
-
-                  const Gap(AppDimens.margin4),
-
-                  if(contact.phone != null) ...[
-                    ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(CupertinoIcons.phone_circle, size: AppDimens.iconSize,),
-                        title: Text(contact.phone ?? '', style: AppStyles.bodyStyle,)
+                  Container(
+                    height: AppDimens.bigAvatarSize,
+                    width: AppDimens.bigAvatarSize,
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.neutral100
                     ),
-                    const Gap(AppDimens.margin2),
-                  ],
-
-                  if(contact.nickname != null) ...[
-                    ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text('Nickname', style: AppStyles.subtitleStyle,),
-                        subtitle: Text("@${contact.nickname}", style: AppStyles.bodyStyle,)
-                    ),
-                    const Gap(AppDimens.margin2),
-                  ],
-
-                  if(contact.email != null) ...[
-                    ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text('Email', style: AppStyles.subtitleStyle,),
-                        subtitle: Text(contact.email ?? "", style: AppStyles.bodyStyle,)
-                    ),
-                    const Gap(AppDimens.margin2),
-                  ],
-
-                  if(contact.groups != null && contact.groups!.isNotEmpty) ...[
-                    ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text('Groups', style: AppStyles.subtitleStyle,),
-                        subtitle: Text(contact.groups!.toStringList().join(', ')
-                            .capitalizeFirstLetter(),
-                          style: AppStyles.bodyStyle,
+                    child: Center(
+                        child: Text(
+                            contact.firstname == null ? "" : contact.firstname![0],
+                            style: AppStyles.avatarTextStyle
                         )
                     ),
-                    const Gap(AppDimens.margin2),
-                  ],
-
-                  if(contact.relationship != null) ...[
-                    ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text('Relationship', style: AppStyles.subtitleStyle,),
-                        subtitle: Text(contact.relationship!.name
-                            .capitalizeFirstLetter(),
-                          style: AppStyles.bodyStyle,
-                        )
-                    ),
-                    const Gap(AppDimens.margin2),
-                  ],
-
-                  if(contact.notes != null) ...[
-                    ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text('Notes', style: AppStyles.subtitleStyle,),
-                        subtitle: Text(contact.notes ?? "", style: AppStyles.bodyStyle,)
-                    ),
-                    const Gap(AppDimens.margin2),
-                  ],
-
-                  const Gap(AppDimens.margin2)
+                  ),
                 ],
               ),
-              Positioned(
-                bottom: AppDimens.margin4,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _bottomButton(
-                          icon: CupertinoIcons.delete,
-                          iconColor: AppColors.redColor,
-                          text: "Delete",
-                          onTap: () {
-                            viewModel.deleteContact();
-                            context.pop();
-                          }
-                      ),
-                      const Gap(AppDimens.margin5),
+              const Gap(AppDimens.margin2),
+              SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Text("${contact.firstname ?? ''} ${contact.lastname ?? ''}",
+                      style: AppStyles.avatarTextStyle)
+              ),
 
-                      _bottomButton(
-                          icon: CupertinoIcons.pencil_outline,
-                          text: "Edit contact",
-                          onTap: () {
-                            DialogHelper().showBottomSheet(
-                              context: context,
-                              child: UpdateContactForm(viewModel)
-                            );
-                          }
-                      ),
-                    ],
-                  ),
+              const Gap(AppDimens.margin4),
+
+              if(contact.phone != null) ...[
+                ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(CupertinoIcons.phone_circle, size: AppDimens.iconSize,),
+                    title: Text(contact.phone ?? '', style: AppStyles.bodyStyle,)
                 ),
-              )
+                const Gap(AppDimens.margin2),
+              ],
+
+              if(contact.nickname != null) ...[
+                ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text('Nickname', style: AppStyles.subtitleStyle,),
+                    subtitle: Text("@${contact.nickname}", style: AppStyles.bodyStyle,)
+                ),
+                const Gap(AppDimens.margin2),
+              ],
+
+              if(contact.email != null) ...[
+                ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text('Email', style: AppStyles.subtitleStyle,),
+                    subtitle: Text(contact.email ?? "", style: AppStyles.bodyStyle,)
+                ),
+                const Gap(AppDimens.margin2),
+              ],
+
+              if(contact.groups != null && contact.groups!.isNotEmpty) ...[
+                ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text('Groups', style: AppStyles.subtitleStyle,),
+                    subtitle: Text(contact.groups!.toStringList().join(', ')
+                        .capitalizeFirstLetter(),
+                      style: AppStyles.bodyStyle,
+                    )
+                ),
+                const Gap(AppDimens.margin2),
+              ],
+
+              if(contact.relationship != null) ...[
+                ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text('Relationship', style: AppStyles.subtitleStyle,),
+                    subtitle: Text(contact.relationship!.name
+                        .capitalizeFirstLetter(),
+                      style: AppStyles.bodyStyle,
+                    )
+                ),
+                const Gap(AppDimens.margin2),
+              ],
+
+              if(contact.notes != null) ...[
+                ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text('Notes', style: AppStyles.subtitleStyle,),
+                    subtitle: Text(contact.notes ?? "", style: AppStyles.bodyStyle,)
+                ),
+                const Gap(AppDimens.margin2),
+              ],
+
+              const Gap(AppDimens.margin10)
             ],
           ),
         );

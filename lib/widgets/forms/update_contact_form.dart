@@ -11,7 +11,7 @@ import 'package:simple_contact_app/view_models/contact_view_model.dart';
 import 'package:simple_contact_app/widgets/primary_button.dart';
 import 'package:stacked/stacked.dart';
 
-import 'default_text_field.dart';
+import '../default_text_field.dart';
 
 class UpdateContactForm extends StatefulWidget {
   final ContactViewModel viewModel;
