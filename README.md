@@ -1,6 +1,6 @@
 # simple_contact_app
 
-A new Flutter project.
+A simple app to add, edit and delete a contact using Hive local storage.
 
 ## Getting Started
 
