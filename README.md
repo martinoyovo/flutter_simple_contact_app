@@ -1,4 +1,4 @@
-# simple_contact_app
+# Simple Contact App
 
 A simple app to add, edit and delete a contact using Hive local storage.
 
