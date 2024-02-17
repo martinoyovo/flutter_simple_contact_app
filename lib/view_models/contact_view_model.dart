@@ -1,6 +1,6 @@
 import 'package:simple_contact_app/locator.dart';
 import 'package:simple_contact_app/models/contact.dart';
-import 'package:simple_contact_app/services/contact.service.dart';
+import 'package:simple_contact_app/services/contact_service.dart';
 import 'package:stacked/stacked.dart';
 
 class ContactViewModel extends ReactiveViewModel {
