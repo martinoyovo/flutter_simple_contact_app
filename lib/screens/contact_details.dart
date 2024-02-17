@@ -149,7 +149,7 @@ class ContactDetails extends StatelessWidget {
                           onTap: () {
                             DialogHelper().showBottomSheet(
                               context: context,
-                              child: const UpdateContactForm()
+                              child: UpdateContactForm(viewModel)
                             );
                           }
                       ),
